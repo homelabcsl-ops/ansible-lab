@@ -12,6 +12,7 @@
       ansible.builtin.dnf:
         name:
           - epel-release
+          - glibc-langpack-en
           - git
           - zsh
           - make
@@ -29,6 +30,11 @@
           - buildah
           - tmux
         state: present
+
+    - name: Enforce strict UTF-8 locale for Unicode rendering
+      become: true
+      ansible.builtin.command: localectl set-locale LANG=en_GB.UTF-8
+      changed_when: false
 
     - name: Clone FZF repository globally
       become: true
