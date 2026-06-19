@@ -139,3 +139,36 @@
       ansible.builtin.user:
         name: '{{ user_name }}'
         shell: /usr/bin/zsh
+
+    - name: Ensure target configuration directories exist
+      become: true
+      ansible.builtin.file:
+        path: '{{ user_home }}/.config/starship'
+        state: directory
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
+
+    - name: Deploy Starship telemetry configuration to hypervisor
+      become: true
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/.config/starship/starship.toml"
+        dest: '{{ user_home }}/.config/starship/starship.toml'
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0644'
+
+    - name: Initialize Starship engine in Target Zshrc
+      become: true
+      ansible.builtin.blockinfile:
+        path: '{{ user_home }}/.zshrc'
+        create: true
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0644'
+        marker: '# {mark} ANSIBLE MANAGED BLOCK: STARSHIP'
+        block: |
+          export LANG=en_GB.UTF-8
+          export LC_ALL=en_GB.UTF-8
+          export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
+          eval "$(starship init zsh)"
