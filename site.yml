@@ -13,6 +13,7 @@
         name:
           - epel-release
           - glibc-langpack-en
+          - ncurses-term
           - git
           - zsh
           - make
