@@ -172,3 +172,34 @@
           export LC_ALL=en_GB.UTF-8
           export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
           eval "$(starship init zsh)"
+
+    # ==============================================================================
+    # 🚀 DKS WORKSPACE & INFRASTRUCTURE SYNCHRONIZATION
+    # ==============================================================================
+
+    - name: Ensure DKS scripts directory exists
+      become: true
+      ansible.builtin.file:
+        path: '{{ user_home }}/scripts'
+        state: directory
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
+
+    - name: Deploy DKS Tmux Ignition Payload
+      become: true
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/scripts/dks-boot.sh"
+        dest: '{{ user_home }}/scripts/dks-boot.sh'
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
+
+    - name: Synchronize LazyVim & Headless Obsidian Architecture
+      become: true
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/.config/nvim/"
+        dest: '{{ user_home }}/.config/nvim/'
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
