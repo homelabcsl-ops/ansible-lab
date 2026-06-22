@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible-lint-config.json
 # vim:ft=yaml
 ---
 # DevOps Standard Ansible Linting Configuration
@@ -6,6 +7,3 @@ profile: production
 # Warn instead of fail for experimental rules
 warn_list:
   - experimental
-
-# Explicitly declare which directories contain which file types
-parseable: true
