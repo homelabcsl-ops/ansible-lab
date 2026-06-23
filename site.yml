@@ -5,7 +5,7 @@
   hosts: lab_nodes
   vars:
     user_name: '{{ ansible_user }}'
-    user_home: '/home/{{ ansible_user }}'
+    user_home: '/home/{{ ansible_user }}.linux'
 
   tasks:
     - name: Provision core Red Hat system packages
