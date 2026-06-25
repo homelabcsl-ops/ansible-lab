@@ -203,6 +203,7 @@
         mode: '0644'
         marker: '# {mark} ANSIBLE MANAGED BLOCK: STARSHIP'
         block: |
+          export PATH="$HOME/.local/bin:$PATH"
           export LANG=en_GB.UTF-8
           export LC_ALL=en_GB.UTF-8
           export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
