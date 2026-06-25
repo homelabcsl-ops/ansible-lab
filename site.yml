@@ -1,5 +1,5 @@
 # vim:ft=yaml.ansible
-# # yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
+# yaml-language-server: $schema=https://raw.githubusercontent.com/ansible/ansible-lint/main/src/ansiblelint/schemas/ansible.json#/$defs/playbook
 ---
 - name: DevOps Idempotent Pave Sequence
   hosts: lab_nodes
@@ -26,7 +26,6 @@
           - tar
           - util-linux-user
           - readline-devel
-          -  #node js removed
           - podman
           - skopeo
           - buildah
@@ -134,6 +133,41 @@
         src: /opt/nvim/bin/nvim
         dest: /usr/local/bin/nvim
         state: link
+
+    - name: Ensure user local hierarchy exists
+      become: true
+      ansible.builtin.file:
+        path: '{{ user_home }}/.local'
+        state: directory
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
+
+    - name: Provision user-space Node.js v20 LTS (ARM64)
+      become: true
+      ansible.builtin.unarchive:
+        src: https://nodejs.org/dist/v20.18.0/node-v20.18.0-linux-arm64.tar.xz
+        dest: '{{ user_home }}/.local'
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        creates: '{{ user_home }}/.local/bin/node'
+      when: ansible_facts['architecture'] == 'aarch64'
+
+    - name: Provision user-space Node.js v20 LTS (x86_64)
+      become: true
+      ansible.builtin.unarchive:
+        src: https://nodejs.org/dist/v20.18.0/node-v20.18.0-linux-x64.tar.xz
+        dest: '{{ user_home }}/.local'
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        creates: '{{ user_home }}/.local/bin/node'
+      when: ansible_facts['architecture'] == 'x86_64'
 
     - name: Change default shell to Zsh
       become: true
