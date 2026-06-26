@@ -64,7 +64,7 @@
         dest: '/usr/local/bin/fzf-git.sh'
         mode: '0755'
         # 2. VERIFIED: The mathematical fingerprint of that exact commit's file
-        checksum: 'sha256:d8b2d3f789...' # (Truncated foir example)
+        checksum: 'sha256:a3f8478e8fc5c6f21337ec859797f70ed88584abb0e41670c62aafef6f909a11' # (Truncated foir example)
 
     - name: Install Zoxide (Architecture Agnostic)
       become: true
