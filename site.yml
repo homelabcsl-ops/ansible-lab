@@ -57,12 +57,14 @@
         dest: /usr/local/bin/fzf
         state: link
 
-    - name: Download fzf-git.sh globally
-      become: true
-      ansible.builtin.get_url:
-        url: https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh
-        dest: /usr/local/bin/fzf-git.sh
+    - name: Download fzf-git.sh globally (Pinned & Verified)
+      get_url:
+        # 1. PINNED: Notice we replaced 'main' with a specific commit hash or release tag
+        url: 'https://raw.githubusercontent.com/junegunn/fzf-git.sh/9ebf8573df2650085a6a430d41eb8e0da761356b/fzf-git.sh'
+        dest: '/usr/local/bin/fzf-git.sh'
         mode: '0755'
+        # 2. VERIFIED: The mathematical fingerprint of that exact commit's file
+        checksum: 'sha256:d8b2d3f789...' # (Truncated foir example)
 
     - name: Install Zoxide (Architecture Agnostic)
       become: true
