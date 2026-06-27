@@ -102,9 +102,10 @@
 
     - name: Download official stable Neovim artifact (v0.11.5)
       ansible.builtin.get_url:
-        url: https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux64.tar.gz
-        dest: /tmp/nvim-linux64.tar.gz
-      when: ansible_facts['architecture'] == 'x86_64'
+        url: https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-arm64.tar.gz
+        dest: /tmp/nvim-linux-arm64.tar.gz
+        mode: '0644' # <-- Add explicit mode
+      when: ansible_facts['architecture'] == 'aarch64'
 
     - name: Extract Neovim to /opt (ARM64)
       become: true
