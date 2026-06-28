@@ -59,7 +59,7 @@
         state: link
 
     - name: Download fzf-git.sh globally (Pinned & Verified)
-      get_url:
+      ansible.builtin.get_url:
         # 1. PINNED: Notice we replaced 'main' with a specific commit hash or release tag
         url: 'https://raw.githubusercontent.com/junegunn/fzf-git.sh/9ebf8573df2650085a6a430d41eb8e0da761356b/fzf-git.sh'
         dest: '/usr/local/bin/fzf-git.sh'
@@ -93,12 +93,6 @@
         executable: /bin/bash # <-- Required for pipefail
         creates: /usr/local/bin/starship
       # noqa command-instead-of-module
-
-    - name: Download official stable Neovim artifact (v0.11.5)
-      ansible.builtin.get_url:
-        url: https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-arm64.tar.gz
-        dest: /tmp/nvim-linux-arm64.tar.gz
-      when: ansible_facts['architecture'] == 'aarch64'
 
     - name: Download official stable Neovim artifact (v0.11.5)
       ansible.builtin.get_url:
