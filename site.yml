@@ -39,15 +39,15 @@
       ansible.builtin.dnf:
         name: epel-release
         state: present
-      become: yes
+      become: true
 
     - name: Install FZF globally via native package manager
       ansible.builtin.dnf:
         name: fzf
         state: present
         enablerepo: epel
-        update_cache: yes
-      become: yes
+        cache_valid_time: 3600
+      become: true
 
     - name: Install FZF binaries headless
       become: true
