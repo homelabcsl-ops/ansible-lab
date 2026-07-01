@@ -35,13 +35,10 @@
       ansible.builtin.command: localectl set-locale LANG=en_GB.UTF-8
       changed_when: false
 
-    - name: Clone FZF repository globally
-      become: true
-      ansible.builtin.git:
-        repo: https://github.com/junegunn/fzf.git
-        dest: /opt/fzf
-        depth: 1
-        version: master # explicit state
+    - name: Install FZF globally via native package manager
+      ansible.builtin.dnf:
+        name: fzf
+        state: present
 
     - name: Install FZF binaries headless
       become: true
