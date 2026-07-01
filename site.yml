@@ -45,6 +45,7 @@
       ansible.builtin.dnf:
         name: fzf
         state: present
+        enablerepo: epel
         update_cache: yes
       become: yes
 
