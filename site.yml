@@ -39,6 +39,7 @@
       ansible.builtin.dnf:
         name: fzf
         state: present
+      become: yes
 
     - name: Install FZF binaries headless
       become: true
