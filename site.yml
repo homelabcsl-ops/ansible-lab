@@ -255,4 +255,8 @@
         dest: '{{ user_home }}/.config/nvim/'
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
-        mode: '0755'
+        # 1. Enforce 0755 strictly on directories, leaving files to inherit native secure permissions
+        directory_mode: '0755'
+        # 2. Prevent local Git commits from triggering needless infrastructure synchronization
+        exclude:
+          - '.git'
