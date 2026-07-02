@@ -44,9 +44,9 @@
 
     - name: Force DNF cache refresh (Only on new EPEL install)
       ansible.builtin.dnf:
-        update_cache: yes
+        update_cache: true
       become: true
-      when: epel_status.changed
+      when: epel_status.changed # noqa: no-handler
 
     - name: Install FZF globally via native package manager
       ansible.builtin.dnf:
@@ -263,6 +263,7 @@
         group: '{{ user_name }}'
         # 1. Enforce 0755 strictly on directories, leaving files to inherit native secure permissions
         directory_mode: '0755'
+        mode: '0644'
         # 2. Prevent local Git commits from triggering needless infrastructure synchronization
         exclude:
           - '.git'
