@@ -254,16 +254,25 @@
         group: '{{ user_name }}'
         mode: '0644'
 
-    - name: Synchronize LazyVim & Headless Obsidian Architecture
+    - name: Synchronize LazyVim Architecture via Delta-Transfer
       become: true
-      ansible.builtin.copy:
+      ansible.posix.synchronize:
         src: "{{ lookup('env', 'HOME') }}/.config/nvim/"
         dest: '{{ user_home }}/.config/nvim/'
+        archive: true
+        # Prevent syncing your local Mac UID/GID to the Red Hat target
+        owner: false
+        group: false
+        rsync_opts:
+          - '--exclude=.git'
+
+    - name: Enforce deterministic architecture permissions
+      become: true
+      ansible.builtin.file:
+        path: '{{ user_home }}/.config/nvim/'
+        state: directory
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
-        # 1. Enforce 0755 strictly on directories, leaving files to inherit native secure permissions
-        directory_mode: '0755'
-        mode: '0644'
-        # 2. Prevent local Git commits from triggering needless infrastructure synchronization
-        exclude:
-          - '.git'
+        recurse: true
+        # Capital 'X' intelligently applies 0755 to directories and 0644 to files
+        mode: 'u=rwX,g=rX,o=rX'
