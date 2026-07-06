@@ -266,11 +266,12 @@
         src: "{{ lookup('env', 'HOME') }}/.config/nvim/"
         dest: '{{ user_home }}/.config/nvim/'
         archive: true
-        # Prevent syncing your local Mac UID/GID to the Red Hat target
         owner: false
         group: false
+        perms: false # <-- This single flag breaks the infinite loop
         rsync_opts:
           - '--exclude=.git'
+          - '--exclude=.DS_Store'
 
     - name: Enforce deterministic architecture permissions
       become: true
