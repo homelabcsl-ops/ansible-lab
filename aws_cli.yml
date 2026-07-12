@@ -2,17 +2,17 @@
   hosts: localhost
   tasks:
     - name: Ensure Homebrew AWS CLI is completely eradicated
-      homebrew:
+      community.general.homebrew:
         name: awscli
         state: absent
 
     - name: Download official statically linked AWS standalone package
-      get_url:
+      ansible.builtin.get_url:
         url: 'https://awscli.amazonaws.com/AWSCLIV2.pkg'
         dest: '/tmp/AWSCLIV2.pkg'
 
     - name: Install the package headlessly
       become: yes
-      command: installer -pkg /tmp/AWSCLIV2.pkg -target /
+      ansible.builtin.command: installer -pkg /tmp/AWSCLIV2.pkg -target /
       args:
         creates: /usr/local/bin/aws
