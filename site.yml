@@ -55,19 +55,6 @@
         enablerepo: epel
       become: true
 
-    - name: Install FZF binaries headless
-      become: true
-      ansible.builtin.command: /opt/fzf/install --bin
-      args:
-        creates: /opt/fzf/bin/fzf
-
-    - name: Create global FZF symlink
-      become: true
-      ansible.builtin.file:
-        src: /opt/fzf/bin/fzf
-        dest: /usr/local/bin/fzf
-        state: link
-
     - name: Download fzf-git.sh globally (Pinned & Verified)
       ansible.builtin.get_url:
         # 1. PINNED: Notice we replaced 'main' with a specific commit hash or release tag
