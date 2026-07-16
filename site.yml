@@ -292,14 +292,15 @@
         mode: '0644'
 
     - name: Synchronize LazyVim Architecture via Delta-Transfer
-      become: true
+      become: false
       ansible.posix.synchronize:
         src: "{{ lookup('env', 'HOME') }}/.config/nvim/"
         dest: '{{ user_home }}/.config/nvim/'
         archive: true
+        checksum: true
         owner: false
         group: false
-        perms: false # <-- This single flag breaks the infinite loop
+        perms: false
         rsync_opts:
           - '--exclude=.git'
           - '--exclude=.DS_Store'
