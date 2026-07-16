@@ -243,7 +243,7 @@
               local time_stamp=$(date +'%H:%M:%S')
 
               # Point directly to the Lima host mount, bypassing the VM guest $HOME
-              local vault_dir="/Users/homelab/devops/00-Inbox/02-Daily"
+              local vault_dir="/Users/homelab/obsidian/devops/00-Inbox/02-Daily"
               local log_file="$vault_dir/${date_stamp}.md"
 
               # Ensure the destination directory exists
