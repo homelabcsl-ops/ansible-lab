@@ -255,7 +255,7 @@
               if [[ ! -f "$log_file" ]]; then
                   if [[ -f "$template_file" ]]; then
                       cp "$template_file" "$log_file"
-                      # Dynamically parse {{ date }} without triggering Ansible Jinja linters
+                      # Dynamically parse date without triggering Ansible Jinja linters
                       sed -i "s/{[{] *date *[}][}]/${date_stamp}/g" "$log_file"
                   else
                       echo "ERROR: DevOps Daily template not found at $template_file" > "$log_file"
