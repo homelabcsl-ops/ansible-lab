@@ -1,0 +1,25 @@
+---
+- name: Provision Native Treesitter CLI (EL9/Rocky Linux)
+  hosts: sandbox
+  become: true
+  tasks:
+    - name: Install LLVM toolchain and Rust environment
+      ansible.builtin.dnf:
+        name:
+          - clang
+          - clang-devel
+          - rust
+          - cargo
+        state: present
+
+    - name: Compile tree-sitter-cli natively from source
+      ansible.builtin.command:
+        cmd: cargo install tree-sitter-cli --locked
+        creates: /root/.cargo/bin/tree-sitter
+
+    - name: Globalize native binary to /usr/local/bin
+      ansible.builtin.copy:
+        src: /root/.cargo/bin/tree-sitter
+        dest: /usr/local/bin/tree-sitter
+        mode: '0755'
+        remote_src: true
