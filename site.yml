@@ -138,6 +138,7 @@
         src: /tmp/eza_aarch64.tar.gz
         dest: /tmp
         remote_src: true
+        creates: /usr/local/bin/eza
       when: ansible_facts['architecture'] == 'aarch64'
 
     - name: Extract eza binary to /tmp (x86_64)
@@ -146,6 +147,7 @@
         src: /tmp/eza_x86_64.tar.gz
         dest: /tmp
         remote_src: true
+        creates: /usr/local/bin/eza
       when: ansible_facts['architecture'] == 'x86_64'
 
     - name: Install eza globally
