@@ -139,7 +139,9 @@
         dest: /tmp
         remote_src: true
         creates: /usr/local/bin/eza
-      when: ansible_facts['architecture'] == 'aarch64'
+      when:
+        - ansible_facts['architecture'] == 'aarch64'
+        - not ansible_check_mode
 
     - name: Extract eza binary to /tmp (x86_64)
       become: true
@@ -148,7 +150,9 @@
         dest: /tmp
         remote_src: true
         creates: /usr/local/bin/eza
-      when: ansible_facts['architecture'] == 'x86_64'
+      when:
+        - ansible_facts['architecture'] == 'x86_64'
+        - not ansible_check_mode
 
     - name: Install eza globally
       become: true
