@@ -48,9 +48,17 @@
       become: true
       when: epel_status.changed # noqa: no-handler
 
-    - name: Install FZF globally via native package manager
+    # ==============================================================================
+    # ⚡ CLI UTILITIES & TERMINAL ENVIRONMENT
+    # ==============================================================================
+
+    - name: Install modern EPEL-dependent CLI utilities
       ansible.builtin.dnf:
-        name: fzf
+        name:
+          - fzf
+          - bat
+          - fd-find
+          - ripgrep
         state: present
         enablerepo: epel
       become: true
@@ -58,7 +66,7 @@
     - name: Download fzf-git.sh globally (Native Curl)
       become: true
       ansible.builtin.command:
-        cmd:
+        cmd: >
           curl -sSfL
           https://raw.githubusercontent.com/junegunn/fzf-git.sh/main/fzf-git.sh
           -o /usr/local/bin/fzf-git.sh
@@ -99,12 +107,59 @@
         creates: /usr/local/bin/starship
       # noqa command-instead-of-module
 
+    # --- Eza Native Binary Deployment ---
+    - name: Download official eza artifact (ARM64)
+      become: true
+      ansible.builtin.command:
+        cmd: >
+          curl -sL
+          https://github.com/eza-community/eza/releases/download/v0.18.2/eza_aarch64-unknown-linux-gnu.tar.gz
+          -o /tmp/eza_aarch64.tar.gz
+      args:
+        creates: /usr/local/bin/eza
+      when: ansible_facts['architecture'] == 'aarch64'
+      # noqa command-instead-of-module
+
+    - name: Download official eza artifact (x86_64)
+      become: true
+      ansible.builtin.command:
+        cmd: >
+          curl -sL
+          https://github.com/eza-community/eza/releases/download/v0.18.2/eza_x86_64-unknown-linux-gnu.tar.gz
+          -o /tmp/eza_x86_64.tar.gz
+      args:
+        creates: /usr/local/bin/eza
+      when: ansible_facts['architecture'] == 'x86_64'
+      # noqa command-instead-of-module
+
+    - name: Extract eza binary to /tmp (ARM64)
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/eza_aarch64.tar.gz
+        dest: /tmp
+        remote_src: true
+      when: ansible_facts['architecture'] == 'aarch64'
+
+    - name: Extract eza binary to /tmp (x86_64)
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/eza_x86_64.tar.gz
+        dest: /tmp
+        remote_src: true
+      when: ansible_facts['architecture'] == 'x86_64'
+
+    - name: Install eza globally
+      become: true
+      ansible.builtin.command: mv /tmp/eza /usr/local/bin/eza
+      args:
+        creates: /usr/local/bin/eza
+
     # We explicitly bypass get_url here due to Python urllib IPv6 resolution bugs in virtualized NATs.
     # The 'creates' argument makes this native command 100% idempotent.
     - name: Download official stable Neovim artifact (v0.11.5)
       become: true
       ansible.builtin.command:
-        cmd:
+        cmd: >
           curl -sL
           https://github.com/neovim/neovim/releases/download/v0.11.5/nvim-linux-arm64.tar.gz
           -o /tmp/nvim-linux-arm64.tar.gz
