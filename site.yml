@@ -285,55 +285,6 @@
           export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
           eval "$(starship init zsh)"
 
-    - name: Inject DkS Cap Function into Target Zshrc
-      become: true
-      ansible.builtin.blockinfile:
-        path: '{{ user_home }}/.zshrc'
-        create: true
-        owner: '{{ user_name }}'
-        group: '{{ user_name }}'
-        mode: '0644'
-        marker: '# {mark} ANSIBLE MANAGED BLOCK: DKS CAP FUNCTION'
-        block: |
-          # =============================================================================
-          # DkS Engine: Frictionless Routing & Templating (Obsidian Capture)
-          # =============================================================================
-          cap() {
-              local message="$1"
-              local date_stamp=$(date +'%Y-%m-%d')
-              local time_stamp=$(date +'%H:%M:%S')
-
-              # Core Johnny-Decimal routing coordinates
-              local vault_root="/Users/homelab/obsidian/devops"
-              local vault_dir="${vault_root}/00-Inbox/02-Daily"
-              local template_file="${vault_root}/99-Resources/99-Templates/99.01 - Daily_Notes.md"
-              local log_file="${vault_dir}/${date_stamp}.md"
-
-              # Ensure the destination directory exists
-              mkdir -p "$vault_dir"
-
-              # Smart Templating: If today's note doesn't exist, instantiate it from the template
-              if [[ ! -f "$log_file" ]]; then
-                  if [[ -f "$template_file" ]]; then
-                      cp "$template_file" "$log_file"
-                      # Dynamically parse date without triggering Ansible Jinja linters
-                      sed -i "s/{[{] *date *[}][}]/${date_stamp}/g" "$log_file"
-                  else
-                      echo "ERROR: DevOps Daily template not found at $template_file" > "$log_file"
-                  fi
-              fi
-
-              # Format the payload and append to the daily markdown note
-              {
-                  echo -e "\n### 📥 [$time_stamp] Execution Telemetry"
-                  [[ -n "$message" ]] && echo -e "**Context:** $message"
-                  echo '```console'
-                  cat -
-                  echo '```'
-                  echo -e "---\n"
-              } >> "$log_file"
-          }
-
     # ==============================================================================
     # 🚀 DKS WORKSPACE & INFRASTRUCTURE SYNCHRONIZATION
     # ==============================================================================
