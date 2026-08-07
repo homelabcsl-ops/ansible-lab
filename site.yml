@@ -389,3 +389,25 @@
         recurse: true
         # Capital 'X' intelligently applies 0755 to directories and 0644 to files
         mode: 'u=rwX,g=rX,o=rX'
+
+    - name: Inject CLI Aliases into Target Zshrc
+      become: true
+      ansible.builtin.blockinfile:
+        path: '{{ user_home }}/.zshrc'
+        create: true
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0644'
+        marker: '# {mark} ANSIBLE MANAGED BLOCK: CLI ALIASES'
+        block: |
+          # ---- Eza (better ls) -----
+          alias ls="eza --icons=always"
+          alias ll="eza -la --icons=always"
+
+          # ---- Zoxide (better cd) -----
+          eval "$(zoxide init zsh)"
+          alias cd="z"
+
+          # ----- Bat (better cat) -----
+          export BAT_THEME=tokyonight_night
+          alias cat="bat"
