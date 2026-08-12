@@ -77,12 +77,6 @@
           - bash-completion
         state: present
 
-    - name: Install RHCSA container management suite
-      become: true
-      ansible.builtin.dnf:
-        name: '@container-tools'
-        state: present
-
     - name: Ensure critical RHCSA daemons are enabled and running
       become: true
       ansible.builtin.systemd:
