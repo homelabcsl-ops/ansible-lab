@@ -49,6 +49,54 @@
       when: epel_status.changed # noqa: no-handler
 
     # ==============================================================================
+    # 🛡️ RHCSA PROFESSIONAL TEST ENVIRONMENT
+    # ==============================================================================
+
+    - name: Install essential RHCSA system administration utilities
+      become: true
+      ansible.builtin.dnf:
+        name:
+          # Security & SELinux
+          - policycoreutils-python-utils
+          - firewalld
+          - setroubleshoot-server
+          # Advanced Storage Management
+          - lvm2
+          - stratisd
+          - stratis-cli
+          - xfsprogs
+          # System & Network Services
+          - chrony
+          - autofs
+          - tuned
+          - NetworkManager-tui
+          # Archiving & Core Utilities
+          - tar
+          - star
+          - gzip
+          - bzip2
+          - bash-completion
+        state: present
+
+    - name: Install RHCSA container management suite
+      become: true
+      ansible.builtin.dnf:
+        name: '@container-tools'
+        state: present
+
+    - name: Ensure critical RHCSA daemons are enabled and running
+      become: true
+      ansible.builtin.systemd:
+        name: '{{ item }}'
+        enabled: true
+        state: started
+      loop:
+        - firewalld
+        - chronyd
+        - tuned
+        - stratisd
+
+    # ==============================================================================
     # ⚡ CLI UTILITIES & TERMINAL ENVIRONMENT
     # ==============================================================================
 
