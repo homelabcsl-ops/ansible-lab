@@ -72,7 +72,6 @@
           - NetworkManager-tui
           # Archiving & Core Utilities
           - tar
-          - star
           - gzip
           - bzip2
           - bash-completion
