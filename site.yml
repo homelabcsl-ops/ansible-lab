@@ -1,6 +1,6 @@
 ---
 - name: DevOps Idempotent Pave Sequence
-  hosts: lab_nodes
+  hosts: rhcsa_lab
   vars:
     user_name: '{{ ansible_user }}'
     user_home: '/home/{{ ansible_user }}.linux'
