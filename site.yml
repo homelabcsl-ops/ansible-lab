@@ -10,7 +10,6 @@
       become: true
       ansible.builtin.dnf:
         name:
-          - epel-release
           - glibc-langpack-en
           - ncurses-term
           - git
@@ -34,8 +33,9 @@
 
     - name: Enable Extra Packages for Enterprise Linux (EPEL)
       ansible.builtin.dnf:
-        name: epel-release
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-10.noarch.rpm
         state: present
+        disable_gpg_check: true
       become: true
       register: epel_status
 
