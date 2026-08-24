@@ -24,9 +24,6 @@
           - tar
           - util-linux-user
           - readline-devel
-          - podman
-          - skopeo
-          - buildah
           - tmux
         state: present
 
