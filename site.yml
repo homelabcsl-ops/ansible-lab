@@ -23,7 +23,7 @@
           - tar
           - util-linux-user
           - readline-devel
-          - tmux
+          # - tmux <--- Purged for 1:1 RHCSA sterile baseline
         state: present
 
     - name: Enforce strict UTF-8 locale for Unicode rendering
@@ -125,7 +125,7 @@
         curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh
         mv /root/.local/bin/zoxide /usr/local/bin/zoxide
       args:
-        executable: /bin/bash # <-- Required for pipefail
+        executable: /bin/bash
         creates: /usr/local/bin/zoxide
       # noqa command-instead-of-module
 
@@ -141,7 +141,7 @@
         set -o pipefail
         curl -sS https://starship.rs/install.sh | sh -s -- -y
       args:
-        executable: /bin/bash # <-- Required for pipefail
+        executable: /bin/bash
         creates: /usr/local/bin/starship
       # noqa command-instead-of-module
 
@@ -198,8 +198,6 @@
       args:
         creates: /usr/local/bin/eza
 
-    # We explicitly bypass get_url here due to Python urllib IPv6 resolution bugs in virtualized NATs.
-    # The 'creates' argument makes this native command 100% idempotent.
     - name: Download official stable Neovim artifact (v0.11.5)
       become: true
       ansible.builtin.command:
@@ -283,11 +281,11 @@
         creates: '{{ user_home }}/.local/bin/node'
       when: ansible_facts['architecture'] == 'x86_64'
 
-    - name: Change default shell to Zsh
+    - name: Enforce default shell to Bash for RHCSA exam parity
       become: true
       ansible.builtin.user:
         name: '{{ user_name }}'
-        shell: /usr/bin/zsh
+        shell: /bin/bash
 
     - name: Ensure target configuration directories exist
       become: true
@@ -307,7 +305,7 @@
         group: '{{ user_name }}'
         mode: '0644'
 
-    - name: Initialize Starship engine in Target Zshrc
+    - name: '[PAUSED] Initialize Starship engine in Target Zshrc'
       become: true
       ansible.builtin.blockinfile:
         path: '{{ user_home }}/.zshrc'
@@ -316,12 +314,7 @@
         group: '{{ user_name }}'
         mode: '0644'
         marker: '# {mark} ANSIBLE MANAGED BLOCK: STARSHIP'
-        block: |
-          export PATH="$HOME/.local/bin:$PATH"
-          export LANG=en_GB.UTF-8
-          export LC_ALL=en_GB.UTF-8
-          export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
-          eval "$(starship init zsh)"
+        state: absent
 
     # ==============================================================================
     # 🚀 DKS WORKSPACE & INFRASTRUCTURE SYNCHRONIZATION
@@ -345,15 +338,6 @@
         group: '{{ user_name }}'
         mode: '0755'
 
-    - name: Deploy DKS Tmux Visual Configuration (Titanium Aesthetic)
-      become: true
-      ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/.tmux.conf"
-        dest: '{{ user_home }}/.tmux.conf'
-        owner: '{{ user_name }}'
-        group: '{{ user_name }}'
-        mode: '0644'
-
     - name: Synchronize LazyVim Architecture via Delta-Transfer
       become: false
       ansible.posix.synchronize:
@@ -376,10 +360,9 @@
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
         recurse: true
-        # Capital 'X' intelligently applies 0755 to directories and 0644 to files
         mode: 'u=rwX,g=rX,o=rX'
 
-    - name: Inject CLI Aliases into Target Zshrc
+    - name: '[PAUSED] Inject CLI Aliases into Target Zshrc'
       become: true
       ansible.builtin.blockinfile:
         path: '{{ user_home }}/.zshrc'
@@ -388,15 +371,4 @@
         group: '{{ user_name }}'
         mode: '0644'
         marker: '# {mark} ANSIBLE MANAGED BLOCK: CLI ALIASES'
-        block: |
-          # ---- Eza (better ls) -----
-          alias ls="eza --icons=always"
-          alias ll="eza -la --icons=always"
-
-          # ---- Zoxide (better cd) -----
-          eval "$(zoxide init zsh)"
-          alias cd="z"
-
-          # ----- Bat (better cat) -----
-          export BAT_THEME=tokyonight_night
-          alias cat="bat"
+        state: absent
