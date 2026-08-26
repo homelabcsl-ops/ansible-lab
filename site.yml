@@ -335,14 +335,35 @@
         group: '{{ user_name }}'
         mode: '0755'
 
-    - name: Deploy DKS Tmux Ignition Payload
+    - name: Enforce strict architectural decoupling (Purge Ignition Payload)
+      become: true
+      ansible.builtin.file:
+        path: '{{ user_home }}/scripts/dks-boot.sh'
+        state: absent
+
+    - name: Deploy capture function to scripts directory
       become: true
       ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/scripts/dks-boot.sh"
-        dest: '{{ user_home }}/scripts/dks-boot.sh'
+        src: "{{ lookup('env', 'HOME') }}/.config/zsh/functions/cap.zsh"
+        dest: '{{ user_home }}/scripts/cap.sh'
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
         mode: '0755'
+
+    - name: Inject capture function into Target Bashrc
+      become: true
+      ansible.builtin.blockinfile:
+        path: '{{ user_home }}/.bashrc'
+        create: true
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0644'
+        marker: '# {mark} ANSIBLE MANAGED BLOCK: CAPTURE FUNCTION'
+        block: |
+          # Enable frictionless workspace capture
+          if [ -f "$HOME/scripts/cap.sh" ]; then
+            source "$HOME/scripts/cap.sh"
+          fi
 
     - name: Synchronize LazyVim Architecture via Delta-Transfer
       become: false
