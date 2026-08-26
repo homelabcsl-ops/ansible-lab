@@ -26,6 +26,12 @@
           # - tmux <--- Purged for 1:1 RHCSA sterile baseline
         state: present
 
+    - name: Enforce sterile RHCSA baseline (Purge Tmux)
+      become: true
+      ansible.builtin.dnf:
+        name: tmux
+        state: absent
+
     - name: Enforce strict UTF-8 locale for Unicode rendering
       become: true
       ansible.builtin.command: localectl set-locale LANG=en_GB.UTF-8
