@@ -341,6 +341,17 @@
         path: '{{ user_home }}/scripts/dks-boot.sh'
         state: absent
 
+    - name: Enforce sterile startup (Purge ghost script invocations)
+      become: true
+      ansible.builtin.lineinfile:
+        path: '{{ item }}'
+        regexp: 'dks-boot\.sh'
+        state: absent
+      loop:
+        - '{{ user_home }}/.bashrc'
+        - '{{ user_home }}/.bash_profile'
+      failed_when: false
+
     - name: Deploy capture function to scripts directory
       become: true
       ansible.builtin.copy:
