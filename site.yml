@@ -23,7 +23,6 @@
           - tar
           - util-linux-user
           - readline-devel
-          # - tmux <--- Purged for 1:1 RHCSA sterile baseline
         state: present
 
     - name: Enforce sterile RHCSA baseline (Purge Tmux)
@@ -73,8 +72,7 @@
           - autofs
           - tuned
           - NetworkManager-tui
-          # Archiving & Core Utilities
-          - tar
+          # Archiving & Core Utilities (Deduplicated)
           - gzip
           - bzip2
           - bash-completion
