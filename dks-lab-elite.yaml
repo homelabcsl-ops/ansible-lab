@@ -3,7 +3,7 @@ vmType: 'vz'
 mountType: 'virtiofs'
 
 images:
-  - location: '/Users/homelab/devops/images/rehl-10-cloud.qcow2'
+  - location: '/Users/homelab/homelab/provisioning/rhel-10-dvd-RHCSA.qcow2'
     arch: 'aarch64'
 
 disk: 100GiB
