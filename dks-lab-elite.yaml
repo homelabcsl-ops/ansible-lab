@@ -1,0 +1,31 @@
+# 🏗️ DKS RHCSA Training Environment (RHEL 10) - CLOUD-NATIVE AUTOMATED
+vmType: 'vz'
+mountType: 'virtiofs'
+
+images:
+  - location: '~/DevOps/images/rhel-10-cloud.qcow2'
+    arch: 'aarch64'
+
+disk: 100GiB
+additionalDisks:
+  - name: 'rhcsa-lvm'
+  - name: 'rhcsa-stratis'
+
+networks:
+  - lima: shared
+ssh:
+  localPort: 2222
+
+mounts:
+  - location: '/Users/homelab/obsidian/devops'
+    mountPoint: '/mnt/vault'
+    writable: true
+
+# Zero-Touch Automation Pipeline
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      # The CDN is already registered via the Red Hat Image Builder payload.
+      # Refresh repositories and apply day-zero security patches.
+      dnf update -y
