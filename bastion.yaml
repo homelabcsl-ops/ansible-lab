@@ -1,0 +1,49 @@
+# 1. IDENTITY
+# We use Ubuntu 24.04 (LTS) for maximum compatibility with LFCA/Odin.
+images:
+  - location: "https://cloud-images.ubuntu.com/releases/24.04/release/ubuntu-24.04-server-cloudimg-arm64.img"
+    arch: "aarch64"
+
+# 2. HARDWARE ALLOCATION
+cpus: 4
+memory: "8GiB"
+
+# --- FIXED: Native Lima SSH Port Lock ---
+ssh:
+  localPort: 49350
+
+# 3. STORAGE (The Frictionless Link)
+mounts:
+  - location: "~"
+    writable: true
+
+# 4. NETWORK (iPad Access & SSH Bridge)
+portForwards:
+  - guestSocket: "/run/user/{{.UID}}/docker.sock"
+    hostSocket: "{{.Home}}/docker.sock"
+  # Forward range for React, Live-Server, APIs
+  - guestPortRange: [3000, 9000]
+    hostIP: "0.0.0.0"
+
+# 5. PROVISIONING (IaC)
+provision:
+  - mode: system
+    script: |
+      #!/bin/bash
+      # --- System Updates ---
+      apt-get update
+      apt-get install -y git curl unzip build-essential wget neofetch python3-pip
+
+      # --- Directory Setup ---
+      mkdir -p /home/{{.User}}/DevOps-Lab
+
+      # --- AWS CLI v2 Installation ---
+      curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"
+      unzip awscliv2.zip
+      ./aws/install
+
+      # --- Cleanup ---
+      rm -rf aws awscliv2.zip
+
+      # --- AWS Shell (Frictionless Upgrade) ---
+      pip3 install aws-shell --break-system-packages
