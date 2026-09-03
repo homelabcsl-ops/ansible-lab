@@ -13,3 +13,6 @@
 .swp
 .idea/
 .vscode/
+*.qcow2
+*.img
+.lima/
