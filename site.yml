@@ -351,29 +351,30 @@
         - '{{ user_home }}/.bash_profile'
       failed_when: false
 
-    - name: Deploy capture function to scripts directory
+    - name: Ensure user local bin directory exists
       become: true
-      ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/devops/dotfiles/scripts/cap"
-        dest: '{{ user_home }}/scripts/cap.sh'
+      ansible.builtin.file:
+        path: '{{ user_home }}/.local/bin'
+        state: directory
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
         mode: '0755'
 
-    - name: Inject capture function into Target Bashrc
+    - name: Deploy capture function to local bin
+      become: true
+      ansible.builtin.copy:
+        src: "{{ lookup('env', 'HOME') }}/devops/dotfiles/scripts/cap"
+        dest: '{{ user_home }}/.local/bin/cap'
+        owner: '{{ user_name }}'
+        group: '{{ user_name }}'
+        mode: '0755'
+
+    - name: Purge legacy capture function sourcing from Target Bashrc
       become: true
       ansible.builtin.blockinfile:
         path: '{{ user_home }}/.bashrc'
-        create: true
-        owner: '{{ user_name }}'
-        group: '{{ user_name }}'
-        mode: '0644'
         marker: '# {mark} ANSIBLE MANAGED BLOCK: CAPTURE FUNCTION'
-        block: |
-          # Enable frictionless workspace capture
-          if [ -f "$HOME/scripts/cap.sh" ]; then
-            source "$HOME/scripts/cap.sh"
-          fi
+        state: absent
 
     - name: Synchronize LazyVim Architecture via Delta-Transfer
       become: false
