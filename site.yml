@@ -354,7 +354,7 @@
     - name: Deploy capture function to scripts directory
       become: true
       ansible.builtin.copy:
-        src: "{{ lookup('env', 'HOME') }}/.config/zsh/functions/cap.zsh"
+        src: "{{ lookup('env', 'HOME') }}/devops/dotfiles/scripts/cap"
         dest: '{{ user_home }}/scripts/cap.sh'
         owner: '{{ user_name }}'
         group: '{{ user_name }}'
