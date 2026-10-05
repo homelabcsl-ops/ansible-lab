@@ -16,3 +16,5 @@
 *.qcow2
 *.img
 .lima/
+.vault_pass
+collections/
