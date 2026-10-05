@@ -27,7 +27,7 @@
         auto_attach: true
       when: cdn_check.status == 200
 
-    - name: Install RHCSA Exam Toolchain & Virtualization Agents
+    - name: Install RHCSA Exam Toolchain
       ansible.builtin.dnf:
         name:
           - qemu-guest-agent

@@ -3,7 +3,10 @@
 ---
 # DevOps Standard Ansible Linting Configuration
 profile: production
+offline: true
 
 # Warn instead of fail for experimental rules
 warn_list:
   - experimental
+
+
