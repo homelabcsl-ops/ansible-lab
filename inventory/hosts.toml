@@ -5,6 +5,6 @@ ansible_user = "homelab.linux"
 ansible_ssh_common_args = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 
 [rhcsa.hosts.rhcsa-lab]
-ansible_host = "127.0.0.1"
+ansible_host = "rhcsa-lab.tail175787.ts.net"
 ansible_user = "homelab.linux"
-ansible_ssh_common_args = "-F ~/.lima/rhcsa-lab/ssh.config -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+ansible_ssh_common_args = "-o StrictHostKeyChecking=accept-new"

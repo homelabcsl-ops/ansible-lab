@@ -58,3 +58,45 @@
       ansible.posix.selinux:
         policy: targeted
         state: enforcing
+
+    # --- MANAGEMENT PLANE PROVISIONING ---
+    - name: Ensure homelab.linux user exists for DKS integration
+      ansible.builtin.user:
+        name: homelab.linux
+        state: present
+        groups: wheel
+        append: true
+        create_home: true
+        shell: /bin/bash
+
+    - name: Enforce passwordless sudo for homelab.linux
+      ansible.builtin.copy:
+        dest: /etc/sudoers.d/homelab_linux
+        content: 'homelab.linux ALL=(ALL) NOPASSWD: ALL'
+        mode: '0440'
+        validate: 'visudo -cf %s'
+
+    # --- TAILSCALE MESH INJECTION ---
+    - name: Download Tailscale Installation Script
+      ansible.builtin.get_url:
+        url: https://tailscale.com/install.sh
+        dest: /tmp/tailscale_install.sh
+        mode: '0700'
+
+    - name: Execute Tailscale Installer
+      ansible.builtin.command: /tmp/tailscale_install.sh
+      args:
+        creates: /usr/bin/tailscale
+
+    - name: Enable and Start Tailscaled Service
+      ansible.builtin.systemd:
+        name: tailscaled
+        enabled: true
+        state: started
+
+    - name: Authenticate Node to Tailscale Network (with Tailscale SSH)
+      ansible.builtin.command:
+        tailscale up --authkey={{ tailscale_auth_key }} --ssh
+        --hostname=rhcsa-lab
+      args:
+        creates: /var/lib/tailscale/tailscaled.state
