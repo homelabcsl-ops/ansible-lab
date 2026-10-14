@@ -1,10 +1,8 @@
-[dks.hosts.dks-lab-elite]
-ansible_host = "127.0.0.1"
-ansible_port = 2222
-ansible_user = "homelab.linux"
-ansible_ssh_common_args = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+[all.vars]
+ansible_user = "homelab"
+ansible_ssh_private_key_file = "/Users/homelab/.lima/_config/user"
+ansible_ssh_common_args = "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o IdentitiesOnly=yes"
 
-[rhcsa.hosts.rhcsa-lab]
-ansible_host = "rhcsa-lab.tail175787.ts.net"
-ansible_user = "homelab.linux"
-ansible_ssh_common_args = "-o StrictHostKeyChecking=accept-new"
+[all.hosts]
+dks-lab-elite = { ansible_host = "127.0.0.1", ansible_port = 2222 }
+rhcsa-lab = { ansible_host = "127.0.0.1", ansible_port = 50011 }

@@ -9,31 +9,20 @@
       ansible.builtin.hostname:
         name: node1.example.com
 
-    - name: Wait for Red Hat CDN connectivity
-      ansible.builtin.uri:
-        url: https://cdn.redhat.com
-        method: HEAD
-      register: cdn_check
-      retries: 20
-      delay: 3
-      until: cdn_check.status == 200
-      ignore_errors: true
+    - name: Eradicate Image Builder artifact user (yr-lab)
+      ansible.builtin.user:
+        name: yr-lab
+        state: absent
+        remove: true
+        force: true
 
-    - name: Register system with Red Hat Subscription Manager
-      community.general.redhat_subscription:
-        state: present
-        username: '{{ rhsm_user }}'
-        password: '{{ rhsm_pass }}'
-        auto_attach: true
-      when: cdn_check.status == 200
-
-    - name: Install RHCSA Exam Toolchain
+    - name: Install RHCSA Exam Toolchain (RHEL 10)
       ansible.builtin.dnf:
         name:
-          - qemu-guest-agent
           - bash-completion
           - podman
-          - container-tools
+          - buildah
+          - skopeo
           - lvm2
           - firewalld
           - NetworkManager
@@ -50,7 +39,6 @@
         enabled: true
         state: started
       loop:
-        - qemu-guest-agent
         - firewalld
         - chronyd
 
@@ -58,23 +46,6 @@
       ansible.posix.selinux:
         policy: targeted
         state: enforcing
-
-    # --- MANAGEMENT PLANE PROVISIONING ---
-    - name: Ensure homelab.linux user exists for DKS integration
-      ansible.builtin.user:
-        name: homelab.linux
-        state: present
-        groups: wheel
-        append: true
-        create_home: true
-        shell: /bin/bash
-
-    - name: Enforce passwordless sudo for homelab.linux
-      ansible.builtin.copy:
-        dest: /etc/sudoers.d/homelab_linux
-        content: 'homelab.linux ALL=(ALL) NOPASSWD: ALL'
-        mode: '0440'
-        validate: 'visudo -cf %s'
 
     # --- TAILSCALE MESH INJECTION ---
     - name: Download Tailscale Installation Script
@@ -94,9 +65,14 @@
         enabled: true
         state: started
 
+    - name: Check Tailscale Mesh State
+      ansible.builtin.command: tailscale status
+      register: ts_status
+      changed_when: false
+      failed_when: false
+
     - name: Authenticate Node to Tailscale Network (with Tailscale SSH)
-      ansible.builtin.command:
-        tailscale up --authkey={{ tailscale_auth_key }} --ssh
+      ansible.builtin.command: >
+        tailscale up --authkey={{ tailscale_authkey }} --ssh
         --hostname=rhcsa-lab
-      args:
-        creates: /var/lib/tailscale/tailscaled.state
+      when: ts_status.rc != 0
