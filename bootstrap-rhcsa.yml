@@ -16,10 +16,19 @@
         remove: true
         force: true
 
-    - name: Install RHCSA Exam Toolchain (RHEL 10)
+    - name: Remove tsflags=nodocs from dnf.conf for 1:1 man-page parity
+      ansible.builtin.lineinfile:
+        path: /etc/dnf/dnf.conf
+        regexp: '^tsflags=nodocs'
+        state: absent
+
+    - name: Install RHCSA Exam Toolchain and Documentation (RHEL 10)
       ansible.builtin.dnf:
         name:
           - bash-completion
+          - man-pages
+          - man-db
+          - kbd
           - podman
           - buildah
           - skopeo
@@ -32,6 +41,10 @@
           - policycoreutils-python-utils
           - bind-utils
         state: present
+
+    - name: Rebuild mandb index for offline search (man -k / apropos)
+      ansible.builtin.command: mandb
+      changed_when: false
 
     - name: Ensure target services are enabled and running
       ansible.builtin.systemd:
@@ -76,3 +89,4 @@
         tailscale up --authkey={{ tailscale_authkey }} --ssh
         --hostname=rhcsa-lab
       when: ts_status.rc != 0
+      changed_when: true
